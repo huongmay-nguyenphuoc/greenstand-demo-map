@@ -1,4 +1,11 @@
-import { FC, useRef, useCallback, MutableRefObject, useState } from "react";
+import {
+  FC,
+  useRef,
+  useCallback,
+  MutableRefObject,
+  useState,
+  useContext,
+} from "react";
 import { ViewState, ViewportProps, StaticMap } from "react-map-gl";
 import { DeckGL, MVTLayer } from "deck.gl";
 import { useToggle } from "react-use";
@@ -6,6 +13,7 @@ import SidePopper from "@/components/SidePopper";
 import { FeatureCollection } from "geojson";
 import * as Locations from "@/locations/index";
 
+import { MapProvider, MapContext } from "../providers/AppContext";
 export interface MapProps {
   width: string | number | undefined;
   height: string | number | undefined;
@@ -18,9 +26,10 @@ const Map: FC<MapProps> = ({ width, height }) => {
   const [info, setInfo] = useState<FeatureCollection | undefined | string>(
     undefined
   );
-  const [viewState, setViewState] = useState<ViewState>(Locations.freetown);
+  const { viewState, setViewState } = useContext(MapContext);
   const [initialViewState, setInitialViewState] = useState(Locations.freetown);
 
+  const { mapStyle, setMapStyle } = useContext(MapContext);
   const handleOnViewStateChange = (e) => {
     console.log(e);
     const { longitude, latitude, zoom } = e.viewState;
@@ -66,10 +75,7 @@ const Map: FC<MapProps> = ({ width, height }) => {
         controller={true}
         getCursor={({}) => "pointer"}
       >
-        <StaticMap
-          mapStyle="https://api.maptiler.com/maps/topo/style.json?key=XhqZqBw9V2UrmNetMf7t"
-          mapboxApiAccessToken={MAPBOX_TOKEN}
-        />
+        <StaticMap mapStyle={mapStyle} mapboxApiAccessToken={MAPBOX_TOKEN} />
       </DeckGL>
       <SidePopper handleClose={handleClose} on={off} info={info}>
         Side Popper

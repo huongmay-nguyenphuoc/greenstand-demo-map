@@ -1,11 +1,12 @@
 import type { NextPage } from "next";
-import { useState, Dispatch } from "react";
+import { useState, Dispatch, useContext } from "react";
 import { FlyToInterpolator, ViewState, ViewportProps } from "react-map-gl";
 import Map from "@/components/Map";
 import * as Locations from "@/locations/index";
+import { MapProvider, MapContext } from "../providers/AppContext";
 
 const MapPage: NextPage = () => {
-  const [viewState, setViewState] = useState<ViewState>(Locations.freetown);
+  const { viewState, setViewState } = useContext(MapContext);
   const handleChangeViewState = ({ viewState, ...rest }) => {
     setViewState(viewState);
   };
@@ -17,7 +18,11 @@ const MapPage: NextPage = () => {
       transitionDuration: 2000,
       transitionInterpolator: new FlyToInterpolator(),
     });
-  return <Map height="100vh" width="100vw" />;
+  return (
+    <MapProvider>
+      <Map height="100vh" width="100vw" />
+    </MapProvider>
+  );
 };
 
 export default MapPage;
